@@ -2,6 +2,13 @@
 
 -  image based on Alpine/k8s.
 
+
+# Why use this instead of qazz92/kubectl
+My best regards to @qazz92, but I prefer total freedom when I am using kubectl. 
+Thus, what this repository does is it achieves just that: Now you can use kubectl whenever, wherever, in your script.
+
+And thanks to @qazz92, kubectl will indeed connect to EKS.
+
 ## Usage
 
 `.github/workflows/eks.yml`
@@ -18,7 +25,7 @@ jobs:
     - name: deploy to cluster
       uses: qazz92/kubectl@1.0.3
       env:
-        kube_confg_data: ${{ secrets.KUBE_CONFIG_DATA }}
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws_region: ${{ secrets.AWS_DEFAULT_REGION }}
@@ -33,7 +40,10 @@ jobs:
         aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws_region: ${{ secrets.AWS_DEFAULT_REGION }}
       with:
-        args: '"rollout status deployment/my-app"'
+        args: | 
+            kubectl set image deployment $K8S_DEPLOYMENT -n $K8S_NAMESPACE
+            $K8S_DEPLOYMENT=$DOCKER_IMAGE:$DOCKER_TAG &&
+            kubectl rollout status deployment/$K8S_DEPLOYMENT -n $K8S_NAMESPACE
 ```
 
 ## Secrets
